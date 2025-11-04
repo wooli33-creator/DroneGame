@@ -204,7 +204,7 @@ export function UI() {
           </div>
         )}
 
-        <div className="absolute bottom-8 left-8 right-8 flex justify-between items-end pointer-events-auto">
+        <div className="absolute bottom-8 left-8 right-8 flex justify-between items-end pointer-events-auto portrait:flex-col portrait:items-center portrait:gap-4 portrait:left-1/2 portrait:-translate-x-1/2 portrait:w-auto">
           <Joystick
             onMove={handleLeftJoystickMove}
             position="left"
