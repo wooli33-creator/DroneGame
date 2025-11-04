@@ -15,6 +15,7 @@ interface GameState {
   missionComplete: boolean;
   showInstructions: boolean;
   health: number;
+  windEnabled: boolean;
   
   setMode: (mode: GameMode) => void;
   setTutorialType: (type: TutorialType) => void;
@@ -26,6 +27,7 @@ interface GameState {
   resetGame: () => void;
   completeMission: () => void;
   toggleInstructions: () => void;
+  toggleWind: () => void;
 }
 
 export const useGame = create<GameState>()(
@@ -39,6 +41,7 @@ export const useGame = create<GameState>()(
     missionComplete: false,
     showInstructions: true,
     health: 100,
+    windEnabled: false,
     
     setMode: (mode) => {
       set({ 
@@ -116,6 +119,10 @@ export const useGame = create<GameState>()(
     
     toggleInstructions: () => {
       set((state) => ({ showInstructions: !state.showInstructions }));
+    },
+    
+    toggleWind: () => {
+      set((state) => ({ windEnabled: !state.windEnabled }));
     }
   }))
 );
