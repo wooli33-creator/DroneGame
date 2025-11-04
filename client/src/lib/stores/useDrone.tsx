@@ -129,15 +129,13 @@ export const useDrone = create<DroneState>()(
       newRotation.x = THREE.MathUtils.clamp(newRotation.x, -Math.PI / 3, Math.PI / 3);
       newRotation.z = THREE.MathUtils.clamp(newRotation.z, -Math.PI / 3, Math.PI / 3);
       
-      const forwardDir = new THREE.Vector3(0, 0, -1);
-      const rightDir = new THREE.Vector3(1, 0, 0);
-      
-      forwardDir.applyEuler(newRotation);
-      rightDir.applyEuler(newRotation);
-      
       const tiltForce = 15.0;
-      newVelocity.x += rightDir.x * newRotation.z * tiltForce * delta;
-      newVelocity.z += forwardDir.z * -newRotation.x * tiltForce * delta;
+      
+      const cos = Math.cos(newRotation.y);
+      const sin = Math.sin(newRotation.y);
+      
+      newVelocity.x += (-newRotation.z * cos - newRotation.x * sin) * tiltForce * delta;
+      newVelocity.z += (-newRotation.z * sin + newRotation.x * cos) * tiltForce * delta;
       
       newVelocity.multiplyScalar(DAMPING);
       newAngularVelocity.multiplyScalar(ANGULAR_DAMPING);

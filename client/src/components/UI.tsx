@@ -4,7 +4,7 @@ import { useGame } from "@/lib/stores/useGame";
 import { useFlightRecorder } from "@/lib/stores/useFlightRecorder";
 import { Joystick } from "./Joystick";
 import { Button } from "./ui/button";
-import { RotateCcw, Menu, Trophy, Circle, Square, Play, Save } from "lucide-react";
+import { RotateCcw, Menu, Trophy, Circle, Square, Play, Save, ChevronUp, ChevronDown } from "lucide-react";
 import { GameMenu } from "./GameMenu";
 
 export function UI() {
@@ -43,6 +43,7 @@ export function UI() {
   const [showMenu, setShowMenu] = useState(false);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [saveName, setSaveName] = useState("");
+  const [showInfoPanel, setShowInfoPanel] = useState(true);
 
   const handleLeftJoystickMove = useCallback((x: number, y: number) => {
     setLeftJoystick({ x, y });
@@ -90,38 +91,48 @@ export function UI() {
       
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute top-4 left-4 right-4 flex justify-between items-start pointer-events-auto">
-          <div className="bg-black/70 text-white p-4 rounded-lg space-y-2">
-            <h1 className="text-xl font-bold mb-2">드론 조종 시뮬레이터</h1>
-            <div className="space-y-1 text-sm">
-              <div>고도: {altitude.toFixed(1)}m</div>
-              <div>속도: {speed.toFixed(1)}m/s</div>
-              <div>방향: {heading.toFixed(0)}°</div>
-              {mode !== "free_flight" && (
-                <>
-                  <div className="border-t border-gray-600 pt-2 mt-2">
-                    <div>점수: {score}</div>
-                    {mode === "mission" && (
-                      <>
-                        <div>링: {ringsCollected}/{totalRings}</div>
-                        <div className="mt-2">
-                          <div className="text-xs mb-1">체력</div>
-                          <div className="w-32 h-2 bg-gray-700 rounded-full overflow-hidden">
-                            <div 
-                              className={`h-full transition-all duration-300 ${
-                                health > 60 ? 'bg-green-500' : 
-                                health > 30 ? 'bg-yellow-500' : 
-                                'bg-red-500'
-                              }`}
-                              style={{ width: `${health}%` }}
-                            />
-                          </div>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </>
-              )}
-            </div>
+          <div className="bg-black/70 text-white rounded-lg overflow-hidden transition-all duration-300">
+            <button 
+              onClick={() => setShowInfoPanel(!showInfoPanel)}
+              className="w-full flex items-center justify-between p-4 hover:bg-black/80 transition-colors"
+            >
+              <h1 className="text-xl font-bold">드론 조종 시뮬레이터</h1>
+              {showInfoPanel ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+            </button>
+            {showInfoPanel && (
+              <div className="px-4 pb-4 space-y-2">
+                <div className="space-y-1 text-sm">
+                  <div>고도: {altitude.toFixed(1)}m</div>
+                  <div>속도: {speed.toFixed(1)}m/s</div>
+                  <div>방향: {heading.toFixed(0)}°</div>
+                  {mode !== "free_flight" && (
+                    <>
+                      <div className="border-t border-gray-600 pt-2 mt-2">
+                        <div>점수: {score}</div>
+                        {mode === "mission" && (
+                          <>
+                            <div>링: {ringsCollected}/{totalRings}</div>
+                            <div className="mt-2">
+                              <div className="text-xs mb-1">체력</div>
+                              <div className="w-32 h-2 bg-gray-700 rounded-full overflow-hidden">
+                                <div 
+                                  className={`h-full transition-all duration-300 ${
+                                    health > 60 ? 'bg-green-500' : 
+                                    health > 30 ? 'bg-yellow-500' : 
+                                    'bg-red-500'
+                                  }`}
+                                  style={{ width: `${health}%` }}
+                                />
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="flex gap-2">
