@@ -6,11 +6,34 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="screen-orientation" content="landscape" />
     <style>
-      @media screen and (orientation: landscape) and (max-height: 600px) {
-        html, body {
-          overflow: hidden;
+      @media screen and (max-width: 768px) {
+        html {
+          transform: rotate(-90deg);
+          transform-origin: left top;
+          width: 100vh;
+          height: 100vw;
+          overflow-x: hidden;
+          position: absolute;
+          top: 100%;
+          left: 0;
         }
+        @media screen and (orientation: landscape) {
+          html {
+            transform: none;
+            width: 100vw;
+            height: 100vh;
+            position: static;
+            top: auto;
+            left: auto;
+          }
+        }
+      }
+      html, body {
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
       }
     </style>
   </head>

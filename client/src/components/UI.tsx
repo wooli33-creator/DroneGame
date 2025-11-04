@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useDrone } from "@/lib/stores/useDrone";
 import { useGame } from "@/lib/stores/useGame";
 import { useFlightRecorder } from "@/lib/stores/useFlightRecorder";
@@ -44,13 +44,13 @@ export function UI() {
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [saveName, setSaveName] = useState("");
 
-  const handleLeftJoystickMove = (x: number, y: number) => {
+  const handleLeftJoystickMove = useCallback((x: number, y: number) => {
     setLeftJoystick({ x, y });
-  };
+  }, [setLeftJoystick]);
 
-  const handleRightJoystickMove = (x: number, y: number) => {
+  const handleRightJoystickMove = useCallback((x: number, y: number) => {
     setRightJoystick({ x, y });
-  };
+  }, [setRightJoystick]);
 
   const handleReset = () => {
     reset();
