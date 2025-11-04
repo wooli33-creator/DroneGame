@@ -25,6 +25,7 @@ export function UI() {
     ringsCollected,
     totalRings,
     missionComplete,
+    health,
     resetGame
   } = useGame();
 
@@ -100,7 +101,22 @@ export function UI() {
                   <div className="border-t border-gray-600 pt-2 mt-2">
                     <div>점수: {score}</div>
                     {mode === "mission" && (
-                      <div>링: {ringsCollected}/{totalRings}</div>
+                      <>
+                        <div>링: {ringsCollected}/{totalRings}</div>
+                        <div className="mt-2">
+                          <div className="text-xs mb-1">체력</div>
+                          <div className="w-32 h-2 bg-gray-700 rounded-full overflow-hidden">
+                            <div 
+                              className={`h-full transition-all duration-300 ${
+                                health > 60 ? 'bg-green-500' : 
+                                health > 30 ? 'bg-yellow-500' : 
+                                'bg-red-500'
+                              }`}
+                              style={{ width: `${health}%` }}
+                            />
+                          </div>
+                        </div>
+                      </>
                     )}
                   </div>
                 </>
@@ -144,7 +160,7 @@ export function UI() {
           </div>
         </div>
 
-        {missionComplete && (
+        {missionComplete && health > 0 && (
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-auto">
             <div className="bg-gradient-to-br from-yellow-400 to-yellow-600 text-white p-8 rounded-2xl shadow-2xl text-center">
               <Trophy className="w-16 h-16 mx-auto mb-4" />
@@ -155,6 +171,23 @@ export function UI() {
                 className="bg-white text-yellow-600 hover:bg-gray-100"
               >
                 다시 도전
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {health <= 0 && mode === "mission" && (
+          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-auto">
+            <div className="bg-gradient-to-br from-red-600 to-red-800 text-white p-8 rounded-2xl shadow-2xl text-center">
+              <div className="text-6xl mb-4">💥</div>
+              <h2 className="text-3xl font-bold mb-2">게임 오버!</h2>
+              <p className="text-xl mb-2">장애물 충돌로 드론이 파손되었습니다</p>
+              <p className="text-lg mb-4">획득 점수: {score}</p>
+              <Button
+                onClick={handleReset}
+                className="bg-white text-red-600 hover:bg-gray-100"
+              >
+                다시 시작
               </Button>
             </div>
           </div>

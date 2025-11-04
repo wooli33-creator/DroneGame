@@ -14,11 +14,14 @@ interface GameState {
   totalRings: number;
   missionComplete: boolean;
   showInstructions: boolean;
+  health: number;
   
   setMode: (mode: GameMode) => void;
   setTutorialType: (type: TutorialType) => void;
   setDifficulty: (difficulty: Difficulty) => void;
   addScore: (points: number) => void;
+  deductScore: (points: number) => void;
+  takeDamage: (damage: number) => void;
   collectRing: () => void;
   resetGame: () => void;
   completeMission: () => void;
@@ -35,6 +38,7 @@ export const useGame = create<GameState>()(
     totalRings: 5,
     missionComplete: false,
     showInstructions: true,
+    health: 100,
     
     setMode: (mode) => {
       set({ 
@@ -42,7 +46,8 @@ export const useGame = create<GameState>()(
         score: 0, 
         ringsCollected: 0, 
         missionComplete: false,
-        tutorialType: "hover"
+        tutorialType: "hover",
+        health: 100
       });
     },
     
@@ -61,12 +66,27 @@ export const useGame = create<GameState>()(
         totalRings: totalRingsByDifficulty[difficulty],
         ringsCollected: 0,
         score: 0,
-        missionComplete: false
+        missionComplete: false,
+        health: 100
       });
     },
     
     addScore: (points) => {
       set((state) => ({ score: state.score + points }));
+    },
+
+    deductScore: (points) => {
+      set((state) => ({ score: Math.max(0, state.score - points) }));
+    },
+
+    takeDamage: (damage) => {
+      set((state) => {
+        const newHealth = Math.max(0, state.health - damage);
+        return { 
+          health: newHealth,
+          missionComplete: newHealth <= 0 ? true : state.missionComplete
+        };
+      });
     },
     
     collectRing: () => {
@@ -85,7 +105,8 @@ export const useGame = create<GameState>()(
       set({
         score: 0,
         ringsCollected: 0,
-        missionComplete: false
+        missionComplete: false,
+        health: 100
       });
     },
     
