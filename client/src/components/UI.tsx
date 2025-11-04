@@ -4,7 +4,7 @@ import { useGame } from "@/lib/stores/useGame";
 import { useFlightRecorder } from "@/lib/stores/useFlightRecorder";
 import { Joystick } from "./Joystick";
 import { Button } from "./ui/button";
-import { RotateCcw, Menu, Trophy, Circle, Square, Play, Save, ChevronUp, ChevronDown, Wind } from "lucide-react";
+import { RotateCcw, Menu, Trophy, Circle, Square, Play, Save, ChevronUp, ChevronDown, Wind, Plane } from "lucide-react";
 import { GameMenu } from "./GameMenu";
 
 export function UI() {
@@ -110,9 +110,9 @@ export function UI() {
           <div className="bg-black/70 text-white rounded-lg overflow-hidden transition-all duration-300">
             <button 
               onClick={() => setShowInfoPanel(!showInfoPanel)}
-              className="w-full flex items-center justify-between p-4 hover:bg-black/80 transition-colors"
+              className="w-full flex items-center justify-between p-3 hover:bg-black/80 transition-colors"
             >
-              <h1 className="text-xl font-bold">드론 조종 시뮬레이터</h1>
+              <Plane className="w-5 h-5" />
               {showInfoPanel ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
             </button>
             {showInfoPanel && (
