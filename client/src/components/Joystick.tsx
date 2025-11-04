@@ -112,6 +112,7 @@ export function Joystick({ onMove, position, mode }: JoystickProps) {
             left: "50%",
             top: "50%",
             transform: `translate(calc(-50% + ${stickPosition.x}px), calc(-50% + ${stickPosition.y}px))`,
+            transition: isDragging ? "none" : "transform 0.2s ease-out",
           }}
         />
       </div>
