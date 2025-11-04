@@ -21,6 +21,7 @@ export function UI() {
 
   const {
     mode,
+    difficulty,
     score,
     ringsCollected,
     totalRings,
@@ -48,7 +49,6 @@ export function UI() {
   const windInfo = useMemo(() => {
     if (mode !== "mission") return null;
     
-    const { difficulty } = useGame.getState();
     switch (difficulty) {
       case "easy":
         return { strength: "약함", color: "text-green-400" };
@@ -59,7 +59,7 @@ export function UI() {
       default:
         return null;
     }
-  }, [mode]);
+  }, [mode, difficulty]);
 
   const handleLeftJoystickMove = useCallback((x: number, y: number) => {
     setLeftJoystick({ x, y });
