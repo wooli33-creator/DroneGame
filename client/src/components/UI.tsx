@@ -191,7 +191,7 @@ export function UI() {
               onClick={toggleControlMode}
               className="bg-blue-600 hover:bg-blue-700 text-white font-semibold"
             >
-              {controlMode === "mode1" ? "모드 1" : "모드 2"}
+              {controlMode === "mode1" ? "타입1" : "타입2"}
             </Button>
             <Button
               onClick={handleReset}
