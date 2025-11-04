@@ -43,18 +43,23 @@ export function Joystick({ onMove, position, mode }: JoystickProps) {
 
       setStickPosition({ x: dx, y: dy });
 
-      let normalizedX = dx / maxRadius;
-      let normalizedY = -dy / maxRadius;
+      const currentDistance = Math.sqrt(dx * dx + dy * dy);
+      const deadZoneRadius = maxRadius * 0.03;
+      
+      let normalizedX = 0;
+      let normalizedY = 0;
 
-      const deadZone = 0.05;
-      if (Math.abs(normalizedX) < deadZone) normalizedX = 0;
-      if (Math.abs(normalizedY) < deadZone) normalizedY = 0;
+      if (currentDistance > deadZoneRadius) {
+        normalizedX = dx / maxRadius;
+        normalizedY = -dy / maxRadius;
 
-      normalizedX = normalizedX * 1.5;
-      normalizedY = normalizedY * 1.5;
+        const sensitivity = 1.6;
+        normalizedX = normalizedX * sensitivity;
+        normalizedY = normalizedY * sensitivity;
 
-      normalizedX = Math.max(-1, Math.min(1, normalizedX));
-      normalizedY = Math.max(-1, Math.min(1, normalizedY));
+        normalizedX = Math.max(-1, Math.min(1, normalizedX));
+        normalizedY = Math.max(-1, Math.min(1, normalizedY));
+      }
 
       onMove(normalizedX, normalizedY);
     };
