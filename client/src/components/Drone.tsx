@@ -62,8 +62,22 @@ export function Drone() {
       </mesh>
 
       <mesh position={[0, 0.15, 0]} castShadow>
-        <sphereGeometry args={[0.15, 16, 16]} />
-        <meshStandardMaterial color="#ef4444" emissive="#ef4444" emissiveIntensity={0.5} />
+        <sphereGeometry args={[0.1, 16, 16]} />
+        <meshStandardMaterial color="#6b7280" metalness={0.8} roughness={0.2} />
+      </mesh>
+
+      <mesh position={[0, 0.15, 0.35]} castShadow>
+        <sphereGeometry args={[0.08, 16, 16]} />
+        <meshStandardMaterial color="#22c55e" emissive="#22c55e" emissiveIntensity={1.0} />
+      </mesh>
+
+      <mesh position={[0.15, 0.15, -0.35]} castShadow>
+        <sphereGeometry args={[0.06, 16, 16]} />
+        <meshStandardMaterial color="#ef4444" emissive="#ef4444" emissiveIntensity={1.0} />
+      </mesh>
+      <mesh position={[-0.15, 0.15, -0.35]} castShadow>
+        <sphereGeometry args={[0.06, 16, 16]} />
+        <meshStandardMaterial color="#ef4444" emissive="#ef4444" emissiveIntensity={1.0} />
       </mesh>
     </group>
   );
