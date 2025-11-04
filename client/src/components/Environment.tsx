@@ -1,8 +1,4 @@
-import { useTexture } from "@react-three/drei";
-
 export function Environment() {
-  const grassTexture = useTexture("/textures/grass.png");
-
   return (
     <>
       <ambientLight intensity={0.5} />
@@ -21,10 +17,10 @@ export function Environment() {
 
       <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
         <planeGeometry args={[100, 100]} />
-        <meshStandardMaterial map={grassTexture} />
+        <meshStandardMaterial color="#4ade80" />
       </mesh>
 
-      <gridHelper args={[100, 100, "#444444", "#333333"]} position={[0, 0.01, 0]} />
+      <gridHelper args={[100, 100, "#333333", "#222222"]} position={[0, 0.01, 0]} />
     </>
   );
 }
