@@ -27,7 +27,9 @@ export function UI() {
     totalRings,
     missionComplete,
     health,
-    resetGame
+    windEnabled,
+    resetGame,
+    toggleWind
   } = useGame();
 
   const {
@@ -47,7 +49,7 @@ export function UI() {
   const [showInfoPanel, setShowInfoPanel] = useState(true);
 
   const windInfo = useMemo(() => {
-    if (mode !== "mission") return null;
+    if (mode !== "mission" || !windEnabled) return null;
     
     switch (difficulty) {
       case "easy":
@@ -59,7 +61,7 @@ export function UI() {
       default:
         return null;
     }
-  }, [mode, difficulty]);
+  }, [mode, difficulty, windEnabled]);
 
   const handleLeftJoystickMove = useCallback((x: number, y: number) => {
     setLeftJoystick({ x, y });
@@ -177,6 +179,13 @@ export function UI() {
               disabled={isRecording || frames.length === 0}
             >
               <Play className="w-4 h-4" />
+            </Button>
+            <Button
+              onClick={toggleWind}
+              className={`${windEnabled ? "bg-cyan-600 hover:bg-cyan-700" : "bg-gray-700 hover:bg-gray-600"} text-white`}
+              title={windEnabled ? "바람 끄기" : "바람 켜기"}
+            >
+              <Wind className="w-4 h-4" />
             </Button>
             <Button
               onClick={toggleControlMode}
