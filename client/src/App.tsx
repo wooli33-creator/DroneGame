@@ -5,6 +5,9 @@ import { Drone } from "./components/Drone";
 import { Environment } from "./components/Environment";
 import { Camera } from "./components/Camera";
 import { UI } from "./components/UI";
+import { Obstacles } from "./components/Obstacles";
+import { Tutorial } from "./components/Tutorial";
+import { Wind } from "./components/Wind";
 
 function App() {
   return (
@@ -27,10 +30,13 @@ function App() {
         <Suspense fallback={null}>
           <Environment />
           <Drone />
+          <Obstacles />
           <Camera />
+          <Wind />
         </Suspense>
       </Canvas>
 
+      <Tutorial />
       <UI />
     </div>
   );

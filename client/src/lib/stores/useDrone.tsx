@@ -28,7 +28,7 @@ interface DroneState {
   setRightJoystick: (input: JoystickInput) => void;
   toggleControlMode: () => void;
   reset: () => void;
-  updatePhysics: (delta: number) => void;
+  updatePhysics: (delta: number, windForce?: THREE.Vector3) => void;
 }
 
 const INITIAL_POSITION = new THREE.Vector3(0, 5, 0);
@@ -78,7 +78,7 @@ export const useDrone = create<DroneState>()(
       });
     },
     
-    updatePhysics: (delta) => {
+    updatePhysics: (delta, windForce = new THREE.Vector3(0, 0, 0)) => {
       const state = get();
       const { leftJoystick, rightJoystick, controlMode } = state;
       
@@ -115,6 +115,8 @@ export const useDrone = create<DroneState>()(
       
       const effectiveThrottle = HOVER_BASELINE + (throttle * (1 - HOVER_BASELINE));
       newVelocity.y += (effectiveThrottle * THROTTLE_POWER - GRAVITY) * delta;
+      
+      newVelocity.add(windForce.clone().multiplyScalar(delta));
       
       newAngularVelocity.y = yaw * YAW_SPEED;
       newAngularVelocity.x = pitch * PITCH_SPEED;

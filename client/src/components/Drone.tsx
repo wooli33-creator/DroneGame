@@ -1,18 +1,22 @@
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { useDrone } from "@/lib/stores/useDrone";
+import { useFlightRecorder } from "@/lib/stores/useFlightRecorder";
 import * as THREE from "three";
 
 export function Drone() {
   const droneRef = useRef<THREE.Group>(null);
-  const { position, rotation, updatePhysics } = useDrone();
+  const { position, rotation } = useDrone();
+  const { recordFrame, isRecording } = useFlightRecorder();
 
-  useFrame((state, delta) => {
-    updatePhysics(delta);
-
+  useFrame(() => {
     if (droneRef.current) {
       droneRef.current.position.copy(position);
       droneRef.current.rotation.copy(rotation);
+      
+      if (isRecording) {
+        recordFrame(position, rotation);
+      }
     }
   });
 

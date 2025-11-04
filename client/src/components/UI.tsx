@@ -1,7 +1,11 @@
+import { useState } from "react";
 import { useDrone } from "@/lib/stores/useDrone";
+import { useGame } from "@/lib/stores/useGame";
+import { useFlightRecorder } from "@/lib/stores/useFlightRecorder";
 import { Joystick } from "./Joystick";
 import { Button } from "./ui/button";
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, Menu, Trophy, Circle, Square, Play, Save } from "lucide-react";
+import { GameMenu } from "./GameMenu";
 
 export function UI() {
   const {
@@ -15,6 +19,30 @@ export function UI() {
     heading,
   } = useDrone();
 
+  const {
+    mode,
+    score,
+    ringsCollected,
+    totalRings,
+    missionComplete,
+    resetGame
+  } = useGame();
+
+  const {
+    isRecording,
+    isReplaying,
+    startRecording,
+    stopRecording,
+    startReplay,
+    stopReplay,
+    frames,
+    saveToLocalStorage
+  } = useFlightRecorder();
+
+  const [showMenu, setShowMenu] = useState(false);
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [saveName, setSaveName] = useState("");
+
   const handleLeftJoystickMove = (x: number, y: number) => {
     setLeftJoystick({ x, y });
   };
@@ -23,54 +51,170 @@ export function UI() {
     setRightJoystick({ x, y });
   };
 
+  const handleReset = () => {
+    reset();
+    resetGame();
+  };
+
+  const handleRecordToggle = () => {
+    if (isRecording) {
+      stopRecording();
+      if (frames.length > 0) {
+        setShowSaveDialog(true);
+      }
+    } else {
+      startRecording();
+    }
+  };
+
+  const handleSaveRecording = () => {
+    if (saveName.trim()) {
+      saveToLocalStorage(saveName.trim());
+      setSaveName("");
+      setShowSaveDialog(false);
+    }
+  };
+
+  const handleReplayToggle = () => {
+    if (isReplaying) {
+      stopReplay();
+    } else {
+      startReplay();
+    }
+  };
+
   return (
-    <div className="fixed inset-0 pointer-events-none">
-      <div className="absolute top-4 left-4 right-4 flex justify-between items-start pointer-events-auto">
-        <div className="bg-black/70 text-white p-4 rounded-lg space-y-2">
-          <h1 className="text-xl font-bold mb-2">드론 조종 시뮬레이터</h1>
-          <div className="space-y-1 text-sm">
-            <div>고도: {altitude.toFixed(1)}m</div>
-            <div>속도: {speed.toFixed(1)}m/s</div>
-            <div>방향: {heading.toFixed(0)}°</div>
+    <>
+      {showMenu && <GameMenu onClose={() => setShowMenu(false)} />}
+      
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-4 left-4 right-4 flex justify-between items-start pointer-events-auto">
+          <div className="bg-black/70 text-white p-4 rounded-lg space-y-2">
+            <h1 className="text-xl font-bold mb-2">드론 조종 시뮬레이터</h1>
+            <div className="space-y-1 text-sm">
+              <div>고도: {altitude.toFixed(1)}m</div>
+              <div>속도: {speed.toFixed(1)}m/s</div>
+              <div>방향: {heading.toFixed(0)}°</div>
+              {mode !== "free_flight" && (
+                <>
+                  <div className="border-t border-gray-600 pt-2 mt-2">
+                    <div>점수: {score}</div>
+                    {mode === "mission" && (
+                      <div>링: {ringsCollected}/{totalRings}</div>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
+          <div className="flex gap-2">
+            <Button
+              onClick={() => setShowMenu(!showMenu)}
+              className="bg-gray-700 hover:bg-gray-600 text-white"
+            >
+              <Menu className="w-4 h-4" />
+            </Button>
+            <Button
+              onClick={handleRecordToggle}
+              className={`${isRecording ? "bg-red-600 hover:bg-red-700 animate-pulse" : "bg-gray-700 hover:bg-gray-600"} text-white`}
+              disabled={isReplaying}
+            >
+              {isRecording ? <Square className="w-4 h-4" /> : <Circle className="w-4 h-4" />}
+            </Button>
+            <Button
+              onClick={handleReplayToggle}
+              className={`${isReplaying ? "bg-green-600 hover:bg-green-700" : "bg-gray-700 hover:bg-gray-600"} text-white`}
+              disabled={isRecording || frames.length === 0}
+            >
+              <Play className="w-4 h-4" />
+            </Button>
+            <Button
+              onClick={toggleControlMode}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+            >
+              {controlMode === "mode1" ? "모드 1" : "모드 2"}
+            </Button>
+            <Button
+              onClick={handleReset}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              <RotateCcw className="w-4 h-4" />
+            </Button>
           </div>
         </div>
 
-        <div className="flex gap-2">
-          <Button
-            onClick={toggleControlMode}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold"
-          >
-            {controlMode === "mode1" ? "모드 1" : "모드 2"}
-          </Button>
-          <Button
-            onClick={reset}
-            className="bg-red-600 hover:bg-red-700 text-white"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </Button>
+        {missionComplete && (
+          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-auto">
+            <div className="bg-gradient-to-br from-yellow-400 to-yellow-600 text-white p-8 rounded-2xl shadow-2xl text-center">
+              <Trophy className="w-16 h-16 mx-auto mb-4" />
+              <h2 className="text-3xl font-bold mb-2">미션 완료!</h2>
+              <p className="text-xl mb-4">최종 점수: {score}</p>
+              <Button
+                onClick={handleReset}
+                className="bg-white text-yellow-600 hover:bg-gray-100"
+              >
+                다시 도전
+              </Button>
+            </div>
+          </div>
+        )}
+
+        <div className="absolute bottom-8 left-8 right-8 flex justify-between items-end pointer-events-auto">
+          <Joystick
+            onMove={handleLeftJoystickMove}
+            position="left"
+            mode={controlMode}
+          />
+          <Joystick
+            onMove={handleRightJoystickMove}
+            position="right"
+            mode={controlMode}
+          />
         </div>
-      </div>
 
-      <div className="absolute bottom-8 left-8 right-8 flex justify-between items-end pointer-events-auto">
-        <Joystick
-          onMove={handleLeftJoystickMove}
-          position="left"
-          mode={controlMode}
-        />
-        <Joystick
-          onMove={handleRightJoystickMove}
-          position="right"
-          mode={controlMode}
-        />
-      </div>
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-full text-xs pointer-events-auto">
+          {controlMode === "mode1" ? (
+            <span>왼쪽: 스로틀/요 | 오른쪽: 엘리베이터/에일러론</span>
+          ) : (
+            <span>왼쪽: 스로틀/에일러론 | 오른쪽: 엘리베이터/요</span>
+          )}
+        </div>
 
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-full text-xs pointer-events-auto">
-        {controlMode === "mode1" ? (
-          <span>왼쪽: 스로틀/요 | 오른쪽: 엘리베이터/에일러론</span>
-        ) : (
-          <span>왼쪽: 스로틀/에일러론 | 오른쪽: 엘리베이터/요</span>
+        {showSaveDialog && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50 pointer-events-auto">
+            <div className="bg-gray-900 border-2 border-blue-500 rounded-lg p-6 max-w-md w-full mx-4">
+              <h3 className="text-xl font-bold text-white mb-4">비행 기록 저장</h3>
+              <input
+                type="text"
+                value={saveName}
+                onChange={(e) => setSaveName(e.target.value)}
+                placeholder="기록 이름 입력..."
+                className="w-full px-4 py-2 rounded bg-gray-800 text-white border border-gray-700 mb-4"
+                autoFocus
+              />
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleSaveRecording}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  <Save className="w-4 h-4 mr-2" />
+                  저장
+                </Button>
+                <Button
+                  onClick={() => {
+                    setShowSaveDialog(false);
+                    setSaveName("");
+                  }}
+                  className="flex-1 bg-gray-700 hover:bg-gray-600 text-white"
+                >
+                  취소
+                </Button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
-    </div>
+    </>
   );
 }
