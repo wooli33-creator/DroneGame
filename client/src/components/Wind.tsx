@@ -6,11 +6,11 @@ import * as THREE from "three";
 
 export function Wind() {
   const { updatePhysics } = useDrone();
-  const { difficulty, mode } = useGame();
+  const { difficulty, mode, windEnabled } = useGame();
   const time = useRef(0);
 
   const windStrength = useMemo(() => {
-    if (mode === "free_flight" || mode === "tutorial") return 0;
+    if (!windEnabled || mode === "free_flight" || mode === "tutorial") return 0;
     
     switch (difficulty) {
       case "easy": return 0.5;
@@ -18,7 +18,7 @@ export function Wind() {
       case "hard": return 3.0;
       default: return 0;
     }
-  }, [difficulty, mode]);
+  }, [difficulty, mode, windEnabled]);
 
   useFrame((state, delta) => {
     time.current += delta;
