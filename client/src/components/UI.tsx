@@ -1,10 +1,10 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useDrone } from "@/lib/stores/useDrone";
 import { useGame } from "@/lib/stores/useGame";
 import { useFlightRecorder } from "@/lib/stores/useFlightRecorder";
 import { Joystick } from "./Joystick";
 import { Button } from "./ui/button";
-import { RotateCcw, Menu, Trophy, Circle, Square, Play, Save, ChevronUp, ChevronDown } from "lucide-react";
+import { RotateCcw, Menu, Trophy, Circle, Square, Play, Save, ChevronUp, ChevronDown, Wind } from "lucide-react";
 import { GameMenu } from "./GameMenu";
 
 export function UI() {
@@ -44,6 +44,22 @@ export function UI() {
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [saveName, setSaveName] = useState("");
   const [showInfoPanel, setShowInfoPanel] = useState(true);
+
+  const windInfo = useMemo(() => {
+    if (mode !== "mission") return null;
+    
+    const { difficulty } = useGame.getState();
+    switch (difficulty) {
+      case "easy":
+        return { strength: "약함", color: "text-green-400" };
+      case "medium":
+        return { strength: "보통", color: "text-yellow-400" };
+      case "hard":
+        return { strength: "강함", color: "text-red-400" };
+      default:
+        return null;
+    }
+  }, [mode]);
 
   const handleLeftJoystickMove = useCallback((x: number, y: number) => {
     setLeftJoystick({ x, y });
@@ -105,6 +121,12 @@ export function UI() {
                   <div>고도: {altitude.toFixed(1)}m</div>
                   <div>속도: {speed.toFixed(1)}m/s</div>
                   <div>방향: {heading.toFixed(0)}°</div>
+                  {windInfo && (
+                    <div className="flex items-center gap-1">
+                      <Wind className="w-3 h-3" />
+                      <span>바람: <span className={windInfo.color}>{windInfo.strength}</span></span>
+                    </div>
+                  )}
                   {mode !== "free_flight" && (
                     <>
                       <div className="border-t border-gray-600 pt-2 mt-2">
