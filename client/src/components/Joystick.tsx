@@ -111,7 +111,7 @@ export function Joystick({ onMove, position, mode }: JoystickProps) {
         </div>
         <div
           ref={stickRef}
-          className={`absolute w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full border-4 border-blue-300/50 shadow-lg transition-shadow ${
+          className={`absolute w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full border-2 border-blue-300/50 shadow-lg transition-shadow ${
             isDragging ? "shadow-blue-500/50" : ""
           }`}
           style={{
