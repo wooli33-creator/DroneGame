@@ -107,46 +107,58 @@ export const useDrone = create<DroneState>()(
       const THROTTLE_POWER = 20.0;
       const HOVER_BASELINE = 0.5;
       const YAW_SPEED = 2.0;
-      const PITCH_SPEED = 4.0;
-      const ROLL_SPEED = 4.0;
+      const PITCH_SPEED = 3.0;
+      const ROLL_SPEED = 3.0;
       const GRAVITY = 9.8;
-      const DAMPING = 0.95;
-      const ANGULAR_DAMPING = 0.9;
+      const DRAG = 5.0;
+      const MAX_TILT = Math.PI / 4;
+      const AUTO_LEVEL_SPEED = 3.0;
       
       const effectiveThrottle = HOVER_BASELINE + (throttle * (1 - HOVER_BASELINE));
       newVelocity.y += (effectiveThrottle * THROTTLE_POWER - GRAVITY) * delta;
       
       newVelocity.add(windForce.clone().multiplyScalar(delta));
       
-      newAngularVelocity.y = yaw * YAW_SPEED;
-      newAngularVelocity.x = pitch * PITCH_SPEED;
-      newAngularVelocity.z = roll * ROLL_SPEED;
+      const inputMagnitude = Math.sqrt(pitch * pitch + roll * roll + yaw * yaw);
+      const hasInput = inputMagnitude > 0.05;
       
-      newRotation.x += newAngularVelocity.x * delta;
-      newRotation.y += newAngularVelocity.y * delta;
-      newRotation.z += newAngularVelocity.z * delta;
+      if (hasInput) {
+        newAngularVelocity.y = yaw * YAW_SPEED;
+        newAngularVelocity.x = pitch * PITCH_SPEED;
+        newAngularVelocity.z = roll * ROLL_SPEED;
+        
+        newRotation.x += newAngularVelocity.x * delta;
+        newRotation.z += newAngularVelocity.z * delta;
+      } else {
+        newRotation.x = THREE.MathUtils.lerp(newRotation.x, 0, AUTO_LEVEL_SPEED * delta);
+        newRotation.z = THREE.MathUtils.lerp(newRotation.z, 0, AUTO_LEVEL_SPEED * delta);
+        newAngularVelocity.set(0, 0, 0);
+      }
       
-      newRotation.x = THREE.MathUtils.clamp(newRotation.x, -Math.PI / 3, Math.PI / 3);
-      newRotation.z = THREE.MathUtils.clamp(newRotation.z, -Math.PI / 3, Math.PI / 3);
+      newRotation.y += yaw * YAW_SPEED * delta;
       
-      const tiltForce = 15.0;
+      newRotation.x = THREE.MathUtils.clamp(newRotation.x, -MAX_TILT, MAX_TILT);
+      newRotation.z = THREE.MathUtils.clamp(newRotation.z, -MAX_TILT, MAX_TILT);
       
+      const tiltForce = 12.0;
       const cos = Math.cos(newRotation.y);
       const sin = Math.sin(newRotation.y);
       
       newVelocity.x += (-newRotation.z * cos - newRotation.x * sin) * tiltForce * delta;
       newVelocity.z += (-newRotation.z * sin + newRotation.x * cos) * tiltForce * delta;
       
-      newVelocity.multiplyScalar(DAMPING);
-      newAngularVelocity.multiplyScalar(ANGULAR_DAMPING);
+      const dragFactor = Math.exp(-DRAG * delta);
+      newVelocity.x *= dragFactor;
+      newVelocity.z *= dragFactor;
+      newVelocity.y *= Math.exp(-2.0 * delta);
       
       newPosition.add(newVelocity.clone().multiplyScalar(delta));
       
       if (newPosition.y < 0) {
         newPosition.y = 0;
         newVelocity.y = 0;
-        newVelocity.x *= 0.5;
-        newVelocity.z *= 0.5;
+        newVelocity.x *= 0.3;
+        newVelocity.z *= 0.3;
       }
       
       const altitude = newPosition.y;
